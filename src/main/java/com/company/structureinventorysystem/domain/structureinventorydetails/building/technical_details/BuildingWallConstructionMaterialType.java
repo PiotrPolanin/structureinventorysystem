@@ -1,0 +1,19 @@
+package com.company.structureinventorysystem.domain.structureinventorydetails.building.technical_details;
+
+public enum BuildingWallConstructionMaterialType {
+    CONCRETE,
+    BRICK_MASONRY,
+    STONE_MASONRY,
+    STONE_AND_BRICK_MASONRY,
+    SOLID_CONCRETE_BLOCK_MASONRY,
+    HOLLOW_CONCRETE_BLOCK_MASONRY,
+
+    CERAMIC_BLOCK_MASONRY,
+    BRICK_AND_CERAMIC_BLOCK_MASONRY,
+    HOLLOW_SLAG_CONCRETE_BLOCK_MASONRY,
+    CELLULAR_CONCRETE_BLOCK_MASONRY,
+    MONOLITHIC_REINFORCED_CONCRETE,
+    PREFABRICATED_REINFORCED_CONCRETE_SLAB,
+    OTHER
+
+}
