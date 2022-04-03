@@ -1,33 +1,40 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import RestApiService from "../../services/RestApiService";
 import BorderlessDefaultTable from "../BorderlessDefaultTable";
+import UsersTable from "../UsersTable";
+import RestApiService from "../../services/RestApiService";
 
-const UserListComponent = () => {
+const UserListComponent = (props) => {
   const [users, setUsers] = useState([]);
+  const service = new RestApiService("user");
+
   const getUsers = () => {
-    var service = new RestApiService("http://localhost:8080/api/user");
     service.getAll().then((response) => {
       setUsers(response.data);
     });
   };
 
-  const tableColumnsNames = [
-    "id",
-    "first name",
-    "last name",
-    "academic degree",
-    "roles",
-    "action",
-  ];
-
   useEffect(() => {
     getUsers();
   }, []);
 
+  const deleteUser = (id) => {
+    service.deleteById(id).then((response) => {
+      setUsers(users.filter((user) => user.id !== id));
+    });
+  };
+
+  const updateUser = (id) => {
+      
+  }
+
   return (
     <>
-      <BorderlessDefaultTable columnNames={tableColumnsNames} data={users} />
+      <UsersTable
+        users={users}
+        deleteUser={deleteUser}
+        updateUser={updateUser}
+      />
     </>
   );
 };

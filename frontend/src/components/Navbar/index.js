@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "../ButtonElement";
+import { ButtonLink } from "../ButtonLinkElement";
 import {
   Nav,
   NavbarContainer,
@@ -25,8 +25,8 @@ const Navbar = () => {
             <NavItem>
               <NavLinks to="about">About</NavLinks>
             </NavItem>
-            <Button to="signin">Sign in</Button>
-            <Button to="signup">Sign up</Button>
+            <ButtonLink to="signin">Sign in</ButtonLink>
+            <ButtonLink to="signup">Sign up</ButtonLink>
           </NavMenu>
         </NavbarContainer>
       </Nav>

@@ -1,6 +1,5 @@
 import React from "react";
 import { BorderlessDefaultTableStyle } from "./BorderlessDefaultTableComponents";
-import { TableButton } from "../TableButton";
 
 const BorderlessDefaultTable = ({ columnNames, data }) => {
   return (
@@ -14,17 +13,19 @@ const BorderlessDefaultTable = ({ columnNames, data }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((object, index) => (
-            <tr key={index}>
-              {Object.entries(object).map(([k, v]) => (
-                <td key={k}>{v}</td>
-              ))}
-              <TableButton primary="true" to="/">
-                edit
-              </TableButton>
-              <TableButton to="/">remove</TableButton>
+          {data.length > 0 ? (
+            data.map((object, index) => (
+              <tr key={index}>
+                {Object.entries(object).map(([k, v]) => (
+                  <td key={k}>{v}</td>
+                ))}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={columnNames.length}>No content</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </BorderlessDefaultTableStyle>
     </>
