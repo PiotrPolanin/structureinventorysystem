@@ -32,12 +32,12 @@ public abstract class GenericController<T extends UpdateEntity<T>> {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<T> getById(@PathVariable(name = "id") Long id) {
-        return ResponseEntity.status(HttpStatus.FOUND).body(service.getById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(service.getById(id));
     }
 
     @GetMapping(value = "")
     public ResponseEntity<List<T>> getAll(@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-                                          @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                          @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
                                           @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
                                           @RequestParam(name = "dir", required = false) String dir) {
         List<T> entities = service.getAll(pageNo, pageSize, sortBy, dir);
