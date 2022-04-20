@@ -1,15 +1,14 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  background: #f0ffff;
+  background: #f8f8ff;
   height: 850px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-
-  // position: relative;
-  // z-index: 0;
+  // justify-content: center;
+  padding-top: 5rem;
+  z-index: 0;
 `;
 
 export const H1 = styled.h1`

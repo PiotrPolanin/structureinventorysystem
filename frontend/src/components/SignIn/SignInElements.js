@@ -55,6 +55,7 @@ export const SignFormContent = styled.div`
 
 export const Form = styled.form`
   background: #010101;
+  background: #2f4f4f;
   max-width: 400px;
   height: auto;
   width: 100%;

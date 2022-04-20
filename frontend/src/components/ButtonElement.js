@@ -15,10 +15,15 @@ export const Button = styled.button`
   justify-content: center;
   align-items: center;
   transition: all 0.2 s ease-in-out;
+  width: 4rem;
+  height: 2rem;
+  margin-top: 10px;
+  margin-bottom: 10px;
 
   &:hover {
     transition: all 0.2 s ease-in-out;
-    background: ${({ primary }) => (primary ? "#fff" : "#01BF71")};
+    outline-style: solid;
+    outline-color: ${({ primary }) => (primary ? "#fff" : "#ffdab9")};
   }
 `;
 

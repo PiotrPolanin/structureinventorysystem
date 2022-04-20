@@ -11,26 +11,24 @@ import {
 
 const Navbar = () => {
   return (
-    <>
-      <Nav>
-        <NavbarContainer>
-          <NavLogo to="/"> SIS </NavLogo>
-          <NavMenu>
-            <NavItem>
-              <NavLinks to="audits">Audits</NavLinks>
-            </NavItem>
-            <NavItem>
-              <NavLinks to="users">Users</NavLinks>
-            </NavItem>
-            <NavItem>
-              <NavLinks to="about">About</NavLinks>
-            </NavItem>
-            <ButtonLink to="signin">Sign in</ButtonLink>
-            <ButtonLink to="signup">Sign up</ButtonLink>
-          </NavMenu>
-        </NavbarContainer>
-      </Nav>
-    </>
+    <Nav>
+      <NavbarContainer>
+        <NavLogo to="/"> SIS </NavLogo>
+        <NavMenu>
+          <NavItem>
+            <NavLinks to="audits">Audits</NavLinks>
+          </NavItem>
+          <NavItem>
+            <NavLinks to="users">Users</NavLinks>
+          </NavItem>
+          <NavItem>
+            <NavLinks to="about">About</NavLinks>
+          </NavItem>
+          <ButtonLink to="signin">Sign in</ButtonLink>
+          <ButtonLink to="signup">Sign up</ButtonLink>
+        </NavMenu>
+      </NavbarContainer>
+    </Nav>
   );
 };
 

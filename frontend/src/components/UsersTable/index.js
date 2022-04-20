@@ -1,9 +1,10 @@
 import React from "react";
 import { Button } from "../ButtonElement";
+import { BorderlessDefaultTableStyle } from "../BorderlessDefaultTable/BorderlessDefaultTableComponents";
 
 const UserTable = (props) => {
   return (
-    <table>
+    <BorderlessDefaultTableStyle>
       <thead>
         <tr>
           <th>first name</th>
@@ -38,7 +39,7 @@ const UserTable = (props) => {
           </tr>
         )}
       </tbody>
-    </table>
+    </BorderlessDefaultTableStyle>
   );
 };
 

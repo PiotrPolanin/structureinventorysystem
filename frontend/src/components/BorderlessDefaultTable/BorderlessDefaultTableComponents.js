@@ -3,12 +3,10 @@ import styled from "styled-components";
 export const BorderlessDefaultTableStyle = styled.table`
   border: none;
   border-collapse: collapse;
-  // border-collapse: separate;
   border-spacing: 10px 10px;
-  vertical-align: middle;
 
   tbody {
-    vertical-align: top;
+    text-align: center;
   }
   td,
   th {
@@ -23,10 +21,14 @@ export const BorderlessDefaultTableStyle = styled.table`
       background-color: #efefef;
     }
     :hover {
-      background-color: grey;
+      background-color: #dcdcdc;
     }
   }
   thead > tr {
     background-color: #c2c2c2;
+  }
+
+  td[colspan]:not([colspan="1"]) {
+    text-align: center;
   }
 `;

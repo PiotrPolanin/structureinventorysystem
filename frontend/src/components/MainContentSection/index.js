@@ -1,8 +1,8 @@
 import React from "react";
 import { Container } from "./MainContentSectionElements";
 
-const MainContentSection = () => {
-  return <Container />;
+const MainContentSection = ({ elements }) => {
+  return <Container>{elements}</Container>;
 };
 
 export default MainContentSection;

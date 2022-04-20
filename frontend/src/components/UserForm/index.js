@@ -26,12 +26,6 @@ const UserForm = () => {
 
   const [user, setUser] = useState(initialUserFormState);
 
-  useEffect(() => {
-    if (location.state.id !== "new") {
-      getUser(location.state.id);
-    }
-  }, []);
-
   const getUser = (id) => {
     service.getById(id).then((response) => {
       let user = response.data;
@@ -39,14 +33,58 @@ const UserForm = () => {
     });
   };
 
-  const saveOrUpdateUser = (user) => {
+  useEffect(() => {
+    if (location.state.id !== "new") {
+      getUser(location.state.id);
+    }
+  }, []);
+
+  const [operationStatus, setOperationStatus] = useState(null);
+
+  const handleResponse = (response) => {
+    if (response !== null) {
+      try {
+        if (response.status === 200) {
+          setOperationStatus("OK");
+        }
+      } catch (error) {
+        setOperationStatus(error.response.data);
+      }
+    }
+  };
+
+  useEffect(
+    (response) => {
+      handleResponse(response);
+    },
+    [operationStatus]
+  );
+
+  const saveOrUpdateUser = async (user) => {
     let jsonUser = JSON.stringify(user);
     if (location.state.id !== "new") {
-      service.update(user.id, jsonUser);
+      let response = await service.update(user.id, jsonUser);
+      handleResponse(response);
     } else {
       service.create(jsonUser);
     }
   };
+
+  // const saveOrUpdateUser = async (user) => {
+  //   let jsonUser = JSON.stringify(user);
+  //   if (location.state.id !== "new") {
+  //     try {
+  //       let response = await service.update(user.id, jsonUser);
+  //       if (response.status === 200) {
+  //         setOperationStatus("OK");
+  //       }
+  //     } catch (error) {
+  //       setOperationStatus(error.response.data);
+  //     }
+  //   } else {
+  //     service.create(jsonUser);
+  //   }
+  // };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -64,8 +102,12 @@ const UserForm = () => {
           onSubmit={(event) => {
             event.preventDefault();
             saveOrUpdateUser(user);
-            setUser(initialUserFormState);
-            // redirectToUsersPage();
+            if (operationStatus === "OK") {
+              setUser(initialUserFormState);
+              // redirectToUsersPage();
+            } else {
+              console.log("Error operation status: ", operationStatus);
+            }
           }}
         >
           <FormLabel htmlFor="firstName">First name</FormLabel>
