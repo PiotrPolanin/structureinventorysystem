@@ -1,14 +1,9 @@
 import React from "react";
-import ScrollToTop from "../components/ScrollToTop";
+import MainContentSection from "../components/MainContentSection";
 import SignIn from "../components/SignIn/index";
 
 const SignInPage = () => {
-  return (
-    <>
-      <ScrollToTop />
-      <SignIn />
-    </>
-  );
+  return <MainContentSection elements={<SignIn />} />;
 };
 
 export default SignInPage;

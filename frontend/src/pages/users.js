@@ -33,15 +33,20 @@ const UsersPage = () => {
   };
 
   return (
-    <>
-      <AddButton onClick={() => redirectToUserForm("new")}>add User</AddButton>
-      <UsersTable
-        users={users}
-        deleteUser={deleteUser}
-        redirectToUserForm={redirectToUserForm}
-      />
-      <MainContentSection />
-    </>
+    <MainContentSection
+      elements={
+        <>
+          <AddButton onClick={() => redirectToUserForm("new")}>
+            add User
+          </AddButton>
+          <UsersTable
+            users={users}
+            deleteUser={deleteUser}
+            redirectToUserForm={redirectToUserForm}
+          />
+        </>
+      }
+    />
   );
 };
 
