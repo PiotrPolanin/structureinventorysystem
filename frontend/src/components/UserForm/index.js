@@ -10,12 +10,14 @@ import {
   FormButton,
 } from "../CustomFormElements";
 import RestApiService from "../../services/RestApiService";
+import FormMessage from "../FormMessageComponent";
 
 const UserForm = () => {
   const usersPageEndpoint = "/users";
   const navigate = useNavigate();
   const location = useLocation();
   const service = new RestApiService("user");
+  let operationStatus = null;
 
   const initialUserFormState = {
     id: null,
@@ -39,52 +41,38 @@ const UserForm = () => {
     }
   }, []);
 
-  const [operationStatus, setOperationStatus] = useState(null);
+  const [message, setMessage] = useState(null);
 
-  const handleResponse = (response) => {
-    if (response !== null) {
-      try {
-        if (response.status === 200) {
-          setOperationStatus("OK");
-        }
-      } catch (error) {
-        setOperationStatus(error.response.data);
-      }
+  useEffect(() => {}, [message]);
+
+  const successOperationHandler = (response) => {
+    if (response.status === 200 || response.status === 201) {
+      operationStatus = "OK";
     }
   };
 
-  useEffect(
-    (response) => {
-      handleResponse(response);
-    },
-    [operationStatus]
-  );
+  const failureOperationHandler = (error) => {
+    operationStatus = error.response.data;
+  };
 
   const saveOrUpdateUser = async (user) => {
     let jsonUser = JSON.stringify(user);
     if (location.state.id !== "new") {
-      let response = await service.update(user.id, jsonUser);
-      handleResponse(response);
+      try {
+        let response = await service.update(user.id, jsonUser);
+        successOperationHandler(response);
+      } catch (error) {
+        failureOperationHandler(error);
+      }
     } else {
-      service.create(jsonUser);
+      try {
+        let response = await service.create(jsonUser);
+        successOperationHandler(response);
+      } catch (error) {
+        failureOperationHandler(error);
+      }
     }
   };
-
-  // const saveOrUpdateUser = async (user) => {
-  //   let jsonUser = JSON.stringify(user);
-  //   if (location.state.id !== "new") {
-  //     try {
-  //       let response = await service.update(user.id, jsonUser);
-  //       if (response.status === 200) {
-  //         setOperationStatus("OK");
-  //       }
-  //     } catch (error) {
-  //       setOperationStatus(error.response.data);
-  //     }
-  //   } else {
-  //     service.create(jsonUser);
-  //   }
-  // };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -95,19 +83,24 @@ const UserForm = () => {
     navigate(usersPageEndpoint);
   };
 
+  const handleUserForm = async (user) => {
+    await saveOrUpdateUser(user);
+    if (operationStatus === "OK") {
+      setUser(initialUserFormState);
+      setMessage(null);
+      redirectToUsersPage();
+    } else {
+      setMessage(operationStatus);
+    }
+  };
+
   return (
     <FormWrap>
       <FormContent>
         <Form
           onSubmit={(event) => {
             event.preventDefault();
-            saveOrUpdateUser(user);
-            if (operationStatus === "OK") {
-              setUser(initialUserFormState);
-              // redirectToUsersPage();
-            } else {
-              console.log("Error operation status: ", operationStatus);
-            }
+            handleUserForm(user);
           }}
         >
           <FormLabel htmlFor="firstName">First name</FormLabel>
@@ -146,6 +139,9 @@ const UserForm = () => {
               cancel
             </FormButton>
           </ButtonContent>
+          {message !== null ? (
+            <FormMessage message={message} isError={true} />
+          ) : null}
         </Form>
       </FormContent>
     </FormWrap>
