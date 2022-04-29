@@ -1,12 +1,15 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import i18n from "../translations/i18n";
 import RestApiService from "../services/RestApiService";
 import MainContentSection from "../components/MainContentSection";
 import { AddButton } from "../components/ButtonElement";
 import UsersTable from "../components/UsersTable";
 
 const UsersPage = () => {
+  const { t, i18n } = useTranslation("translation_button");
   const navigate = useNavigate();
 
   const redirectToUserForm = (id) => {
@@ -37,7 +40,7 @@ const UsersPage = () => {
       elements={
         <>
           <AddButton onClick={() => redirectToUserForm("new")}>
-            add User
+            {t("add")}
           </AddButton>
           <UsersTable
             users={users}

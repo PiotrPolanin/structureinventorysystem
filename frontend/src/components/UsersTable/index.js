@@ -1,16 +1,23 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "../../translations/i18n";
 import { Button } from "../ButtonElement";
 import { BorderlessDefaultTableStyle } from "../BorderlessDefaultTable/BorderlessDefaultTableComponents";
 
 const UserTable = (props) => {
+  const { t, i18n } = useTranslation([
+    "translation_user",
+    "translation_button",
+  ]);
+
   return (
     <BorderlessDefaultTableStyle>
       <thead>
         <tr>
-          <th>first name</th>
-          <th>last name</th>
-          <th>academic degree</th>
-          <th>action</th>
+          <th>{t("first_name", { ns: "translation_user" })}</th>
+          <th>{t("last_name", { ns: "translation_user" })}</th>
+          <th>{t("academic_degree", { ns: "translation_user" })}</th>
+          <th>{t("operation", { ns: "translation_user" })}</th>
         </tr>
       </thead>
       <tbody>
@@ -25,10 +32,10 @@ const UserTable = (props) => {
                   primary="true"
                   onClick={() => props.redirectToUserForm(user.id)}
                 >
-                  edit
+                  {t("edit", { ns: "translation_button" })}
                 </Button>
                 <Button onClick={() => props.deleteUser(user.id)}>
-                  remove
+                  {t("delete", { ns: "translation_button" })}
                 </Button>
               </td>
             </tr>
