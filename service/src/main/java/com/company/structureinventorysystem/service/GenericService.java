@@ -1,4 +1,4 @@
-package com.company.structureinventorysystem.web.shared;
+package com.company.structureinventorysystem.service;
 
 import com.company.structureinventorysystem.domain.shared.SortDirection;
 import com.company.structureinventorysystem.domain.shared.UpdateEntity;

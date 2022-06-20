@@ -1,8 +1,7 @@
-package com.company.structureinventorysystem.web.audit;
+package com.company.structureinventorysystem.service;
 
 import com.company.structureinventorysystem.domain.audit.BuildingAudit;
 import com.company.structureinventorysystem.infrastructure.repository.BuildingAuditRepository;
-import com.company.structureinventorysystem.web.shared.GenericService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

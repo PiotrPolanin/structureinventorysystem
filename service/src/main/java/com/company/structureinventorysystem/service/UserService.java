@@ -1,8 +1,7 @@
-package com.company.structureinventorysystem.web.user;
+package com.company.structureinventorysystem.service;
 
 import com.company.structureinventorysystem.domain.user.User;
 import com.company.structureinventorysystem.infrastructure.repository.UserRepository;
-import com.company.structureinventorysystem.web.shared.GenericService;
 import org.springframework.stereotype.Service;
 
 @Service
