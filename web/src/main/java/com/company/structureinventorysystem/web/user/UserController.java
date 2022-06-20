@@ -1,7 +1,8 @@
-package com.company.structureinventorysystem.web;
+package com.company.structureinventorysystem.web.user;
 
 import com.company.structureinventorysystem.domain.user.User;
-import com.company.structureinventorysystem.domain.user.UserService;
+import com.company.structureinventorysystem.service.UserService;
+import com.company.structureinventorysystem.web.shared.GenericController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

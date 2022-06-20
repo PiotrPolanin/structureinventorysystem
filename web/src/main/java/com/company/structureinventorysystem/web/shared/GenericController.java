@@ -1,7 +1,7 @@
-package com.company.structureinventorysystem.web;
+package com.company.structureinventorysystem.web.shared;
 
-import com.company.structureinventorysystem.domain.shared.GenericService;
 import com.company.structureinventorysystem.domain.shared.UpdateEntity;
+import com.company.structureinventorysystem.service.GenericService;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

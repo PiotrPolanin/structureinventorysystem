@@ -1,4 +1,4 @@
-package com.company.structureinventorysystem.infrastructure.configuration;
+package com.company.structureinventorysystem.web.configuration;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;

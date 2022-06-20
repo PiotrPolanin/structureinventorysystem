@@ -1,4 +1,4 @@
-package com.company.structureinventorysystem.web;
+package com.company.structureinventorysystem.web.shared;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

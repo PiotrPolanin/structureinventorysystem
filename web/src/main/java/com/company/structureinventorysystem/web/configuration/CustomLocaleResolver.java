@@ -1,4 +1,4 @@
-package com.company.structureinventorysystem.infrastructure.configuration;
+package com.company.structureinventorysystem.web.configuration;
 
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
