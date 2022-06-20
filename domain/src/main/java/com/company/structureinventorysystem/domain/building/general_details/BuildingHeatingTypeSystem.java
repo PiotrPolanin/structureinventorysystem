@@ -1,4 +1,4 @@
-package com.company.structureinventorysystem.domain.structureinventorydetails.building.general_details;
+package com.company.structureinventorysystem.domain.building.general_details;
 
 public enum BuildingHeatingTypeSystem {
     CENTRAL_HEATING, FURNACE, NOT_EXISTS

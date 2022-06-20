@@ -1,4 +1,4 @@
-package com.company.structureinventorysystem.domain.structureinventorydetails.building.technical_details;
+package com.company.structureinventorysystem.domain.building.technical_details;
 
 public enum BuildingWallVerticalLocation {
 
