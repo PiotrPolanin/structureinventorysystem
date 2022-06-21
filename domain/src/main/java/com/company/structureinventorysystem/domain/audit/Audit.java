@@ -1,34 +1,42 @@
 package com.company.structureinventorysystem.domain.audit;
 
+import com.company.structureinventorysystem.domain.shared.StructureType;
 import com.company.structureinventorysystem.domain.user.User;
 import com.company.structureinventorysystem.domain.shared.BaseEntity;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @MappedSuperclass
 public abstract class Audit extends BaseEntity<Long> {
 
-    @NotNull
     @Column(nullable = false)
+    @Size(min = 2, max = 255, message = "{validation.error.audit.name.Size}")
+    @Pattern(regexp = "a-zA-z", message = "{validation.error.audit.name.Pattern}")
     protected String name;
+    @Size(max = 255, message = "{validation.error.audit.location.Size}")
+    @Pattern(regexp = "a-zA-z", message = "{validation.error.audit.location.Pattern}")
     protected String location;
+    @Size(max = 255, message = "{validation.error.audit.description.Size}")
+    @Pattern(regexp = "a-zA-z", message = "{validation.error.audit.description.Pattern}")
     protected String description;
-    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "structure_type", nullable = false)
     protected StructureType structureType;
+    @Column(name = "created_on", nullable = false, updatable = false)
     protected LocalDate createdOn;
+    @Column(name = "updated_on", nullable = false)
+    @Future(message = "{validation.error.audit.updatedOn.Future}")
     protected LocalDate updatedOn;
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "created_by_user_id", unique = true)
+    @JoinColumn(name = "created_by_user_id", unique = true, foreignKey = @ForeignKey(name = "fk_audit_created_by_user_id"))
     protected User createdBy;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "updated_by_user_id", unique = true)
+    @JoinColumn(name = "updated_by_user_id", unique = true, foreignKey = @ForeignKey(name = "fk_audit_updated_by_user_id"))
     protected User updatedBy;
 
-    public Audit(String name, User createdBy) {
+    public Audit(@NotNull String name, @NotNull User createdBy) {
         this.name = name;
         this.createdOn = LocalDate.now();
         this.createdBy = createdBy;
@@ -77,6 +85,10 @@ public abstract class Audit extends BaseEntity<Long> {
         return createdBy;
     }
 
+    public void setUpdatedBy(User updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
     public User getUpdatedBy() {
         return updatedBy;
     }
@@ -90,8 +102,8 @@ public abstract class Audit extends BaseEntity<Long> {
                 ", description: " + description +
                 ", structure type: " + structureType +
                 ", created on: " + createdOn +
-                ", updated on: " + updatedOn +
                 ", created by: " + createdBy +
+                ", updated on: " + updatedOn +
                 ", updated by: " + updatedBy + "]";
     }
 
