@@ -15,7 +15,7 @@ public class AuditFactoryImpl implements AuditFactory {
             case PIPELINE:
                 return new PipelineAudit(name, createdBy);
             default:
-                throw new IllegalArgumentException("Structure type is not supported");
+                throw new IllegalArgumentException(String.format("Not supported audit for structure type %s", type));
         }
     }
 
