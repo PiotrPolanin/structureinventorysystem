@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = "com.company.structureinventorysystem")
-@EntityScan(basePackages = "com.company.structureinventorysystem")
+@EntityScan(basePackages = "com.company.structureinventorysystem.domain")
 @EnableJpaRepositories(basePackages = "com.company.structureinventorysystem.infrastructure.repository")
 public class StructureInventorySystemApplication {
 
