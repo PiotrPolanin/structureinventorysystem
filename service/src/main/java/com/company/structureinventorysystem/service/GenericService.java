@@ -12,30 +12,36 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public abstract class GenericService<T extends UpdateEntity<T>> {
 
-    private final GenericRepository<T> repository;
+    protected final Class<T> entityClass;
+    protected final GenericRepository<T> repository;
 
-    public GenericService(GenericRepository<T> repository) {
+    public GenericService(Class<T> entityClass, GenericRepository<T> repository) {
+        this.entityClass = entityClass;
         this.repository = repository;
     }
 
     public T getById(Long id) {
-        return repository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Entity %s with id %s not found", entityClass.getName(), id)));
     }
 
     public List<T> getAll(Integer pageNo, Integer pageSize, String sortBy, String dir) {
-        Sort sort = Sort.by(sortBy);
-        if (SortDirection.DESC.getValue().equals(dir)) {
-            sort = sort.descending();
+        if (pageNo != null && pageSize != null && sortBy != null && !sortBy.isEmpty() && dir != null && !dir.isEmpty()) {
+            Sort sort = Sort.by(sortBy.trim());
+            if (SortDirection.DESC.getValue().equals(dir.trim().toLowerCase(Locale.ROOT))) {
+                sort = sort.descending();
+            }
+            Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+            Page<T> pageEntities = repository.findAll(pageable);
+            if (pageEntities.hasContent()) {
+                return pageEntities.getContent();
+            }
+            return new ArrayList<>();
         }
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-        Page<T> pageEntities = repository.findAll(pageable);
-        if (pageEntities.hasContent()) {
-            return pageEntities.getContent();
-        }
-        return new ArrayList<>();
+        throw new IllegalArgumentException("Each parameter must not null or empty");
     }
 
     @Transactional
