@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", schema = "structureinventorysystem")
 public class User extends BaseEntity<Long> implements UpdateEntity<User> {
 
     @NotNull(message = "{validation.error.user.firstName.NotNull}")
@@ -24,8 +24,9 @@ public class User extends BaseEntity<Long> implements UpdateEntity<User> {
     private String lastName;
     @Column(name = "academic_degree")
     private String academicDegree;
-    @ElementCollection
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @ElementCollection(targetClass = UserRole.class)
+    @Enumerated(value = EnumType.STRING)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), foreignKey = @ForeignKey(name = "FK_users_user_roles"), schema = "structureinventorysystem")
     private final Set<UserRole> roles = new HashSet<>();
 
     public User(@NotNull String firstName, @NotNull String lastName, String academicDegree) {
@@ -77,11 +78,15 @@ public class User extends BaseEntity<Long> implements UpdateEntity<User> {
     @Override
     public void update(@NotNull User updated) {
         if (updated == null) {
-            throw new IllegalArgumentException("Updated state cannot be null");
+            throw new IllegalArgumentException("Updated state must not null");
         }
         this.firstName = updated.getFirstName();
         this.lastName = updated.getLastName();
         this.academicDegree = updated.getAcademicDegree();
+        if (updated.getRoles().size() > 0) {
+            this.roles.clear();
+            this.roles.addAll(updated.getRoles());
+        }
     }
 
     @Override
