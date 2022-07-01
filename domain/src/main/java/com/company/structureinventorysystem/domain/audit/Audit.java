@@ -26,14 +26,14 @@ public abstract class Audit extends BaseEntity<Long> {
     protected StructureType structureType;
     @Column(name = "created_on", nullable = false, updatable = false)
     protected LocalDate createdOn;
-    @Column(name = "updated_on", nullable = false)
+    @Column(name = "updated_on")
     @Future(message = "{validation.error.audit.updatedOn.Future}")
     protected LocalDate updatedOn;
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "created_by_user_id", unique = true, foreignKey = @ForeignKey(name = "fk_audit_created_by_user_id"))
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_user_id", nullable = false, foreignKey = @ForeignKey(name = "FK_audit_created_by_user_id"))
     protected User createdBy;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "updated_by_user_id", unique = true, foreignKey = @ForeignKey(name = "fk_audit_updated_by_user_id"))
+    @JoinColumn(name = "updated_by_user_id", foreignKey = @ForeignKey(name = "FK_audit_updated_by_user_id"))
     protected User updatedBy;
 
     public Audit(@NotNull String name, @NotNull User createdBy) {
