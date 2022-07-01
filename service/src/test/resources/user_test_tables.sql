@@ -9,7 +9,7 @@ CREATE TABLE structureinventorysystem.users (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS structureinventorysystem.user_roles (
+CREATE TABLE structureinventorysystem.user_roles (
   user_id bigint NOT NULL,
   roles varchar(255) DEFAULT NULL,
   CONSTRAINT `FK_users_user_roles` FOREIGN KEY (user_id) REFERENCES structureinventorysystem.users (id)
