@@ -10,6 +10,6 @@ public class BuildingAuditService extends GenericService<BuildingAudit> {
 
     @Autowired
     public BuildingAuditService(BuildingAuditRepository repository) {
-        super(repository);
+        super(BuildingAudit.class, repository);
     }
 }
