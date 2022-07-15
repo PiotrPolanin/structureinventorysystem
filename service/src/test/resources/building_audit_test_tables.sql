@@ -28,5 +28,6 @@ CREATE TABLE structureinventorysystem.building_audits (
   updated_by_user_id bigint DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT `FK_audit_created_by_user_id` FOREIGN KEY (created_by_user_id) REFERENCES structureinventorysystem.users (id),
-  CONSTRAINT `FK_audit_updated_by_user_id` FOREIGN KEY (updated_by_user_id) REFERENCES structureinventorysystem.users (id)
+  CONSTRAINT `FK_audit_updated_by_user_id` FOREIGN KEY (updated_by_user_id) REFERENCES structureinventorysystem.users (id),
+  CONSTRAINT `building_audits_chk_1` CHECK ((`created_on` <= `updated_on`))
 );
