@@ -5,6 +5,7 @@ import com.company.structureinventorysystem.configuration.BuildingAuditServiceTe
 import com.company.structureinventorysystem.configuration.PersistenceTestConfiguration;
 import com.company.structureinventorysystem.domain.audit.BuildingAudit;
 import com.company.structureinventorysystem.domain.shared.StructureType;
+import com.company.structureinventorysystem.domain.user.User;
 import com.company.structureinventorysystem.utils.converter.SqlScriptExtractor;
 import com.company.structureinventorysystem.utils.io.StringFileOperation;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,8 +19,11 @@ import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -33,6 +37,10 @@ public class BuildingAuditServiceTest {
 
     @Autowired
     private BuildingAuditService buildingAuditService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    EntityManager entityManager;
     private static List<Long> refBuildingAuditIds;
     private static List<String> refBuildingAuditNames;
     private static List<String> refBuildingAuditLocations;
@@ -46,7 +54,7 @@ public class BuildingAuditServiceTest {
     public static void setup() {
         SqlScriptExtractor extractor = new SqlScriptExtractor(new StringFileOperation());
         refBuildingAuditIds = List.of(1L, 2L, 3L, 4L, 5L, 6L);
-        refDatesOfCreation = List.of(LocalDate.now().plusDays(5), LocalDate.now().plusDays(7), LocalDate.now().plusDays(10), LocalDate.now().plusDays(16), LocalDate.now().plusDays(20), LocalDate.now().plusDays(20));
+        refDatesOfCreation = List.of(LocalDate.now().plusDays(5), LocalDate.now().plusDays(3), LocalDate.now().plusDays(10), LocalDate.now().plusDays(9), LocalDate.now().plusDays(20), LocalDate.now().plusDays(20));
         refDatesOfUpdate = List.of(LocalDate.now().plusDays(7), LocalDate.now().plusDays(10), LocalDate.now().plusDays(15), LocalDate.now().plusDays(23), LocalDate.now().plusDays(21), LocalDate.now().plusDays(21));
         refBuildingAuditNames = extractor.extract("src/test/resources/building_audit_test_sample.sql", 0);
         refBuildingAuditLocations = extractor.extract("src/test/resources/building_audit_test_sample.sql", 2);
@@ -62,7 +70,7 @@ public class BuildingAuditServiceTest {
     }
 
     @Test
-    public void shouldGetByIdThrowEntityNotFoundExceptionWhenIdNotFound() {
+    public void shouldGetByIdThrowEntityNotFoundExceptionWhenIdNotExists() {
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> buildingAuditService.getById(500L));
         assertEquals("Entity com.company.structureinventorysystem.domain.audit.BuildingAudit with id 500 not found", exception.getMessage());
     }
@@ -92,7 +100,7 @@ public class BuildingAuditServiceTest {
         assertEquals(StructureType.BUILDING, buildingAudit_2.getStructureType());
         assertEquals(refBuildingAuditLocations.get(1), buildingAudit_2.getLocation());
         assertEquals(refBuildingAuditDescriptions.get(1), buildingAudit_2.getDescription());
-        assertEquals(LocalDate.now().plusDays(7), buildingAudit_2.getCreatedOn());
+        assertEquals(LocalDate.now().plusDays(3), buildingAudit_2.getCreatedOn());
         assertEquals(refUserIdsWhoCreatedBuildingAudits.get(1), buildingAudit_2.getCreatedBy().getId());
         assertEquals(LocalDate.now().plusDays(10), buildingAudit_2.getUpdatedOn());
         assertEquals(refUserIdsWhoUpdatedBuildingAudits.get(1), buildingAudit_2.getUpdatedBy().getId());
@@ -112,7 +120,7 @@ public class BuildingAuditServiceTest {
         assertEquals(StructureType.BUILDING, buildingAudit_4.getStructureType());
         assertEquals(refBuildingAuditLocations.get(3), buildingAudit_4.getLocation());
         assertEquals(refBuildingAuditDescriptions.get(3), buildingAudit_4.getDescription());
-        assertEquals(LocalDate.now().plusDays(16), buildingAudit_4.getCreatedOn());
+        assertEquals(LocalDate.now().plusDays(9), buildingAudit_4.getCreatedOn());
         assertEquals(refUserIdsWhoCreatedBuildingAudits.get(3), buildingAudit_4.getCreatedBy().getId());
         assertEquals(LocalDate.now().plusDays(23), buildingAudit_4.getUpdatedOn());
         assertEquals(refUserIdsWhoUpdatedBuildingAudits.get(3), buildingAudit_4.getUpdatedBy().getId());
@@ -141,21 +149,21 @@ public class BuildingAuditServiceTest {
     @Test
     public void shouldGetAllThrowIllegalArgumentExceptionWhenParametersAreNull() {
         IllegalArgumentException exceptionForNullPageNo = assertThrows(IllegalArgumentException.class, () -> buildingAuditService.getAll(null, 20, "id", "asc"));
-        assertEquals("Each parameter must not null or empty", exceptionForNullPageNo.getMessage());
+        assertEquals("Each parameter must not be null", exceptionForNullPageNo.getMessage());
         IllegalArgumentException exceptionForNullPageSize = assertThrows(IllegalArgumentException.class, () -> buildingAuditService.getAll(2, null, "name", "desc"));
-        assertEquals("Each parameter must not null or empty", exceptionForNullPageSize.getMessage());
+        assertEquals("Each parameter must not be null", exceptionForNullPageSize.getMessage());
         IllegalArgumentException exceptionForNullSortBy = assertThrows(IllegalArgumentException.class, () -> buildingAuditService.getAll(0, 50, null, "desc"));
-        assertEquals("Each parameter must not null or empty", exceptionForNullSortBy.getMessage());
+        assertEquals("Each parameter must not be null", exceptionForNullSortBy.getMessage());
         IllegalArgumentException exceptionForNullDirectionSorting = assertThrows(IllegalArgumentException.class, () -> buildingAuditService.getAll(0, 100, "description", null));
-        assertEquals("Each parameter must not null or empty", exceptionForNullDirectionSorting.getMessage());
+        assertEquals("Each parameter must not be null", exceptionForNullDirectionSorting.getMessage());
     }
 
     @Test
     public void shouldGetAllThrowIllegalArgumentExceptionWhenStringParametersAreEmpty() {
         IllegalArgumentException exceptionForEmptySortBy = assertThrows(IllegalArgumentException.class, () -> buildingAuditService.getAll(5, 10, "", "desc"));
-        assertEquals("Each parameter must not null or empty", exceptionForEmptySortBy.getMessage());
+        assertEquals("Parameter sortBy and dir must not be empty", exceptionForEmptySortBy.getMessage());
         IllegalArgumentException exceptionForEmptyDirectionSorting = assertThrows(IllegalArgumentException.class, () -> buildingAuditService.getAll(0, 5, "structureType", ""));
-        assertEquals("Each parameter must not null or empty", exceptionForEmptyDirectionSorting.getMessage());
+        assertEquals("Parameter sortBy and dir must not be empty", exceptionForEmptyDirectionSorting.getMessage());
     }
 
     @Test
@@ -264,28 +272,6 @@ public class BuildingAuditServiceTest {
     }
 
     @Test
-    public void shouldGetAllReturnBuildingAuditsSortedByCreatedOnAscending() {
-        //When
-        List<BuildingAudit> buildingAudits = buildingAuditService.getAll(0, 15, "createdOn", "asc");
-        List<LocalDate> datesInAscOrder = buildingAudits.stream().map(ba -> ba.getCreatedOn()).collect(Collectors.toList());
-        //Then
-        assertEquals(6, datesInAscOrder.size());
-        assertIterableEquals(refDatesOfCreation, datesInAscOrder);
-    }
-
-    @Test
-    public void shouldGetAllReturnBuildingAuditsSortedByCreatedOnDescending() {
-        //Given
-        List<LocalDate> refDatesOfCreationInDescOrder = refDatesOfCreation.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
-        //When
-        List<BuildingAudit> buildingAudits = buildingAuditService.getAll(0, 15, "createdOn", "desc");
-        List<LocalDate> datesInDescOrder = buildingAudits.stream().map(ba -> ba.getCreatedOn()).collect(Collectors.toList());
-        //Then
-        assertEquals(6, datesInDescOrder.size());
-        assertIterableEquals(refDatesOfCreationInDescOrder, datesInDescOrder);
-    }
-
-    @Test
     public void shouldGetAllReturnBuildingAuditsSortedByCreatedByAscending() {
         //Given
         List<Long> refUserIdsWhoCreatedBuildingAuditsInAscOrder = refUserIdsWhoCreatedBuildingAudits.stream().sorted().collect(Collectors.toList());
@@ -308,30 +294,6 @@ public class BuildingAuditServiceTest {
     }
 
     @Test
-    public void shouldGetAllReturnBuildingAuditsSortedByUpdatedOnAscending() {
-        //Given
-        List<LocalDate> refDatesOfUpdateInAscOrders = refDatesOfUpdate.stream().sorted().collect(Collectors.toList());
-        //When
-        List<BuildingAudit> buildingAudits = buildingAuditService.getAll(0, 30, "updatedBy", "asc");
-        List<LocalDate> datesOfUpdateInAscOrders = buildingAudits.stream().map(ba -> ba.getUpdatedOn()).collect(Collectors.toList());
-        //Then
-        assertEquals(6, datesOfUpdateInAscOrders.size());
-        assertIterableEquals(refDatesOfUpdateInAscOrders, datesOfUpdateInAscOrders);
-    }
-
-    @Test
-    public void shouldGetAllReturnBuildingAuditsSortedByUpdatedOnDescending() {
-        //Given
-        List<LocalDate> refDatesOfUpdateInDescOrders = refDatesOfUpdate.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
-        //When
-        List<BuildingAudit> buildingAudits = buildingAuditService.getAll(0, 30, "updatedBy", "desc");
-        List<LocalDate> datesOfUpdateInDescOrders = buildingAudits.stream().map(ba -> ba.getUpdatedOn()).collect(Collectors.toList());
-        //Then
-        assertEquals(6, datesOfUpdateInDescOrders.size());
-        assertIterableEquals(refDatesOfUpdateInDescOrders, datesOfUpdateInDescOrders);
-    }
-
-    @Test
     public void shouldGetAllReturnBuildingAuditsSortedByUpdatedByAscending() {
         //Given
         List<Long> refUserIdsWhoUpdatedBuildingAuditsInAscOrder = refUserIdsWhoUpdatedBuildingAudits.stream().sorted().collect(Collectors.toList());
@@ -351,6 +313,233 @@ public class BuildingAuditServiceTest {
         List<Long> userIdsWhoUpdatedBuildingAuditsInDescOrder = buildingAudits.stream().map(ba -> ba.getUpdatedBy().getId()).collect(Collectors.toList());
         //Then
         assertIterableEquals(refUserIdsWhoUpdatedBuildingAuditsInDescOrder, userIdsWhoUpdatedBuildingAuditsInDescOrder);
+    }
+
+    @Test
+    public void shouldGetAllReturnBuildingAuditsSortedByCreatedOnAscending() {
+        //Given
+        List<LocalDate> refDatesOfCreationInAscOrder = refDatesOfCreation.stream().sorted().collect(Collectors.toList());
+        //When
+        List<BuildingAudit> buildingAudits = buildingAuditService.getAll(0, 15, "createdOn", "asc");
+        List<LocalDate> datesInAscOrder = buildingAudits.stream().map(ba -> ba.getCreatedOn()).collect(Collectors.toList());
+        //Then
+        assertEquals(6, datesInAscOrder.size());
+        assertIterableEquals(refDatesOfCreationInAscOrder, datesInAscOrder);
+    }
+
+    @Test
+    public void shouldGetAllReturnBuildingAuditsSortedByByCreatedOnDescending() {
+        //Given
+        List<LocalDate> refDatesOfCreationInDescOrder = refDatesOfCreation.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+        //When
+        List<BuildingAudit> buildingAudits = buildingAuditService.getAll(0, 15, "createdOn", "desc");
+        List<LocalDate> datesInDescOrder = buildingAudits.stream().map(ba -> ba.getCreatedOn()).collect(Collectors.toList());
+        //Then
+        assertEquals(6, datesInDescOrder.size());
+        assertIterableEquals(refDatesOfCreationInDescOrder, datesInDescOrder);
+    }
+
+    @Test
+    public void shouldGetAllReturnBuildingAuditsSortedByUpdatedOnAscending() {
+        //Given
+        List<LocalDate> refDatesOfUpdateInAscOrders = refDatesOfUpdate.stream().sorted().collect(Collectors.toList());
+        //When
+        List<BuildingAudit> buildingAudits = buildingAuditService.getAll(0, 30, "updatedOn", "asc");
+        List<LocalDate> datesOfUpdateInAscOrders = buildingAudits.stream().map(ba -> ba.getUpdatedOn()).collect(Collectors.toList());
+        //Then
+        assertEquals(6, datesOfUpdateInAscOrders.size());
+        assertIterableEquals(refDatesOfUpdateInAscOrders, datesOfUpdateInAscOrders);
+    }
+
+    @Test
+    public void shouldGetAllReturnBuildingAuditsSortedByUpdatedOnDescending() {
+        //Given
+        List<LocalDate> refDatesOfUpdateInDescOrders = refDatesOfUpdate.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+        //When
+        List<BuildingAudit> buildingAudits = buildingAuditService.getAll(0, 30, "updatedOn", "desc");
+        List<LocalDate> datesOfUpdateInDescOrders = buildingAudits.stream().map(ba -> ba.getUpdatedOn()).collect(Collectors.toList());
+        //Then
+        assertEquals(6, datesOfUpdateInDescOrders.size());
+        assertIterableEquals(refDatesOfUpdateInDescOrders, datesOfUpdateInDescOrders);
+    }
+
+    @Test
+    public void shouldSaveThrowIllegalArgumentExceptionWhenParameterIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> buildingAuditService.save(null));
+        assertEquals("Entity com.company.structureinventorysystem.domain.audit.BuildingAudit must not be null", exception.getMessage());
+    }
+
+    @Test
+    public void shouldSaveThrowConstraintViolationExceptionWhenNameIsNull() {
+        //Given
+        User user = userService.getById(2L);
+        BuildingAudit buildingAudit = new BuildingAudit(null, LocalDate.now(), user);
+        //Then
+        assertThrows(ConstraintViolationException.class, () -> buildingAuditService.save(buildingAudit));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"A", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum id magna in nunc viverra scelerisque non id orci. Donec volutpat sem non tincidunt fringilla. Vestibulum elementum ut augue eget lacinia. Mauris convallis felis justo. In ut mauris a duis."})
+    public void shouldSaveThrowConstraintViolationExceptionWhenNameExceedsSize(String name) {
+        //Given
+        User user = userService.getById(5l);
+        BuildingAudit buildingAuditWithInvalidName = new BuildingAudit(name, LocalDate.now(), user);
+        //Then
+        assertThrows(ConstraintViolationException.class, () -> buildingAuditService.save(buildingAuditWithInvalidName));
+    }
+
+    @Test
+    public void shouldSaveThrowConstraintViolationExceptionWhenLocationExceedsMaxSize() {
+        //Given
+        User user = userService.getById(3L);
+        BuildingAudit buildingAudit = new BuildingAudit("Building audit", LocalDate.now(), user);
+        buildingAudit.setLocation("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum id magna in nunc viverra scelerisque non id orci. Donec volutpat sem non tincidunt fringilla. Vestibulum elementum ut augue eget lacinia. Mauris convallis felis justo. In ut mauris a duis.");
+        //Then
+        assertThrows(ConstraintViolationException.class, () -> buildingAuditService.save(buildingAudit));
+    }
+
+    @Test
+    public void shouldSaveThrowConstraintViolationExceptionWhenDescriptionExceedsMaxSize() {
+        //Given
+        User user = userService.getById(3L);
+        BuildingAudit buildingAudit = new BuildingAudit("Building audit", LocalDate.now(), user);
+        buildingAudit.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum id magna in nunc viverra scelerisque non id orci. Donec volutpat sem non tincidunt fringilla. Vestibulum elementum ut augue eget lacinia. Mauris convallis felis justo. In ut mauris a duis.");
+        //Then
+        assertThrows(ConstraintViolationException.class, () -> buildingAuditService.save(buildingAudit));
+    }
+
+    @Test
+    public void shouldSaveThrowConstraintViolationExceptionWhenCreatedByIsNull() {
+        //Given
+        BuildingAudit buildingAudit = new BuildingAudit("Building audit", LocalDate.now(), null);
+        //Then
+        assertThrows(ConstraintViolationException.class, () -> buildingAuditService.save(buildingAudit));
+    }
+
+    @Test
+    @Transactional
+    public void shouldSaveThrowIllegalStateExceptionWhenUpdatedOnIsBeforeCreatedOn() {
+        //Given
+        LocalDate dateOfCreation = LocalDate.now().plusYears(1);
+        BuildingAudit buildingAudit = new BuildingAudit("Building audit", dateOfCreation, userService.getById(3L));
+        buildingAudit.setLocation("nowhere");
+        buildingAudit.setDescription("");
+        buildingAudit.setUpdatedBy(userService.getById(8L));
+        //When
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> buildingAuditService.save(buildingAudit));
+        //Then
+        assertEquals("The date of update " + LocalDate.now() + " for the attribute updatedBy must not be before the date of creation " + dateOfCreation + " for the attribute createdBy", exception.getMessage());
+        assertNull(entityManager.find(BuildingAudit.class, 7L));
+    }
+
+    @Test
+    @Transactional
+    public void shouldSavePersistProperlyDefinedBuildingAudit() {
+        //Given
+        BuildingAudit buildingAudit = new BuildingAudit("Building audit", LocalDate.now(), userService.getById(7L));
+        buildingAudit.setLocation("somewhere");
+        buildingAudit.setDescription("description");
+        buildingAudit.setUpdatedBy(userService.getById(4L));
+        //When
+        buildingAuditService.save(buildingAudit);
+        //Then
+        List<BuildingAudit> buildingAudits = entityManager.createQuery("SELECT ba FROM BuildingAudit ba", BuildingAudit.class).getResultList();
+        assertEquals(7, buildingAudits.size());
+        assertEquals("Building audit", buildingAudits.get(6).getName());
+        assertEquals(StructureType.BUILDING, buildingAudits.get(6).getStructureType());
+        assertEquals(LocalDate.now(), buildingAudits.get(6).getCreatedOn());
+        assertEquals(LocalDate.now(), buildingAudits.get(6).getUpdatedOn());
+        assertEquals("somewhere", buildingAudits.get(6).getLocation());
+        assertEquals("description", buildingAudits.get(6).getDescription());
+        assertEquals(7, buildingAudits.get(6).getCreatedBy().getId());
+        assertEquals(4, buildingAudits.get(6).getUpdatedBy().getId());
+    }
+
+    @Test
+    @Transactional
+    public void shouldSavePersistProperlyDefinedBuildingAuditWhenUpdatedByIsNull() {
+        //Given
+        BuildingAudit buildingAudit = new BuildingAudit("Audit", LocalDate.now(), userService.getById(10L));
+        buildingAudit.setUpdatedBy(null);
+        //When
+        buildingAuditService.save(buildingAudit);
+        //Then
+        List<BuildingAudit> buildingAudits = entityManager.createQuery("SELECT ba FROM BuildingAudit ba", BuildingAudit.class).getResultList();
+        assertEquals(7, buildingAudits.size());
+        assertEquals("Audit", buildingAudits.get(6).getName());
+        assertEquals(StructureType.BUILDING, buildingAudits.get(6).getStructureType());
+        assertEquals(LocalDate.now(), buildingAudits.get(6).getCreatedOn());
+        assertEquals(10, buildingAudits.get(6).getCreatedBy().getId());
+        assertNull(buildingAudits.get(6).getLocation());
+        assertNull(buildingAudits.get(6).getDescription());
+        assertNull(buildingAudits.get(6).getUpdatedBy());
+        assertNull(buildingAudits.get(6).getUpdatedOn());
+    }
+
+    @Test
+    public void shouldUpdateThrowIllegalArgumentExceptionWhenIdIsNull() {
+        //Given
+        BuildingAudit updated = new BuildingAudit("Updated building audit", LocalDate.now(), userService.getById(9L));
+        //Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> buildingAuditService.update(null, updated));
+        assertEquals("Each parameter must not be null", exception.getMessage());
+    }
+
+    @Test
+    public void shouldUpdateThrowEntityNotFoundExceptionWhenIdNotExists() {
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> buildingAuditService.update(1000L, new BuildingAudit()));
+        assertEquals("Entity com.company.structureinventorysystem.domain.audit.BuildingAudit with id 1000 not found", exception.getMessage());
+    }
+
+    @Test
+    public void shouldUpdateThrowIllegalArgumentExceptionWhenBuildingAuditIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> buildingAuditService.update(3L, null));
+        assertEquals("Each parameter must not be null", exception.getMessage());
+    }
+
+    @Test
+    public void shouldUpdateThrowIllegalStateExceptionWhenUpdatedOnIsBeforeCreatedOn() {
+        //Given
+        LocalDate dateOfCreation = LocalDate.now().plusYears(2);
+        BuildingAudit buildingAudit = new BuildingAudit("BA", dateOfCreation, userService.getById(4L));
+        buildingAudit.setLocation("somewhere");
+        buildingAudit.setDescription("desc");
+        buildingAudit.setUpdatedBy(userService.getById(10L));
+        //When
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> buildingAuditService.update(1L, buildingAudit));
+        //Then
+        assertEquals("The date of update " + LocalDate.now() + " for the attribute updatedBy must not be before the date of creation " + dateOfCreation + " for the attribute createdBy", exception.getMessage());
+        BuildingAudit dbBuildingAudit = entityManager.find(BuildingAudit.class, 1L);
+        assertNotEquals("BA", dbBuildingAudit.getName());
+        assertNotEquals("somewhere", dbBuildingAudit.getLocation());
+        assertNotEquals("desc", dbBuildingAudit.getDescription());
+        assertEquals(LocalDate.now().plusDays(5), dbBuildingAudit.getCreatedOn());
+        assertEquals(1, dbBuildingAudit.getCreatedBy().getId());
+        assertEquals(LocalDate.now().plusDays(7), dbBuildingAudit.getUpdatedOn());
+        assertEquals(5, dbBuildingAudit.getUpdatedBy().getId());
+    }
+
+    @Test
+    @Transactional
+    public void shouldUpdateReplaceStateOfBuildingAuditFromDB() {
+        //Given
+        BuildingAudit buildingAudit_4 = entityManager.find(BuildingAudit.class, 4L);
+        buildingAudit_4.setDescription("something");
+        buildingAudit_4.setLocation("somewhere");
+        buildingAudit_4.setName("Building audit");
+        //When
+        buildingAuditService.update(buildingAudit_4.getId(), buildingAudit_4);
+        //Then
+        BuildingAudit updatedBuildingAudit_4_From_DB = entityManager.find(BuildingAudit.class, 4L);
+        assertEquals(buildingAudit_4.getId(), updatedBuildingAudit_4_From_DB.getId());
+        assertEquals(buildingAudit_4.getName(), updatedBuildingAudit_4_From_DB.getName());
+        assertEquals(buildingAudit_4.getStructureType(), updatedBuildingAudit_4_From_DB.getStructureType());
+        assertEquals(buildingAudit_4.getLocation(), updatedBuildingAudit_4_From_DB.getLocation());
+        assertEquals(buildingAudit_4.getDescription(), updatedBuildingAudit_4_From_DB.getDescription());
+        assertEquals(buildingAudit_4.getCreatedOn(), updatedBuildingAudit_4_From_DB.getCreatedOn());
+        assertEquals(buildingAudit_4.getCreatedBy(), updatedBuildingAudit_4_From_DB.getCreatedBy());
+        assertEquals(buildingAudit_4.getUpdatedOn(), updatedBuildingAudit_4_From_DB.getUpdatedOn());
+        assertEquals(buildingAudit_4.getUpdatedBy(), updatedBuildingAudit_4_From_DB.getUpdatedBy());
     }
 
 }
