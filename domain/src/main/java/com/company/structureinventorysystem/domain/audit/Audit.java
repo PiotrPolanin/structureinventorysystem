@@ -3,6 +3,7 @@ package com.company.structureinventorysystem.domain.audit;
 import com.company.structureinventorysystem.domain.shared.StructureType;
 import com.company.structureinventorysystem.domain.user.User;
 import com.company.structureinventorysystem.domain.shared.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -11,34 +12,43 @@ import java.time.LocalDate;
 @MappedSuperclass
 public abstract class Audit extends BaseEntity<Long> {
 
-    @Column(nullable = false)
+    @NotNull(message = "{validation.error.audit.name.NotNull}")
     @Size(min = 2, max = 255, message = "{validation.error.audit.name.Size}")
-    @Pattern(regexp = "a-zA-z", message = "{validation.error.audit.name.Pattern}")
+    @Column(nullable = false)
     protected String name;
     @Size(max = 255, message = "{validation.error.audit.location.Size}")
-    @Pattern(regexp = "a-zA-z", message = "{validation.error.audit.location.Pattern}")
     protected String location;
     @Size(max = 255, message = "{validation.error.audit.description.Size}")
-    @Pattern(regexp = "a-zA-z", message = "{validation.error.audit.description.Pattern}")
     protected String description;
+    @NotNull(message = "{validation.error.audit.structureType.NotNull}")
     @Enumerated(EnumType.STRING)
     @Column(name = "structure_type", nullable = false)
     protected StructureType structureType;
+    @NotNull(message = "{validation.error.audit.createdOn.NotNull}")
     @Column(name = "created_on", nullable = false, updatable = false)
-    protected LocalDate createdOn;
+    protected LocalDate createdOn = LocalDate.now();
     @Column(name = "updated_on")
-    @Future(message = "{validation.error.audit.updatedOn.Future}")
     protected LocalDate updatedOn;
+    @NotNull(message = "{validation.error.audit.createdBy.NotNull}")
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_user_id", nullable = false, foreignKey = @ForeignKey(name = "FK_audit_created_by_user_id"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "firstName", "lastName", "academicDegree", "roles"})
     protected User createdBy;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by_user_id", foreignKey = @ForeignKey(name = "FK_audit_updated_by_user_id"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "firstName", "lastName", "academicDegree", "roles"})
     protected User updatedBy;
 
     public Audit(@NotNull String name, @NotNull User createdBy) {
         this.name = name;
-        this.createdOn = LocalDate.now();
+        this.createdBy = createdBy;
+    }
+
+    public Audit(@NotNull String name, @NotNull LocalDate createdOn, @NotNull User createdBy) {
+        this.name = name;
+        if (createdOn != null) {
+            this.createdOn = createdOn;
+        }
         this.createdBy = createdBy;
     }
 
@@ -86,11 +96,23 @@ public abstract class Audit extends BaseEntity<Long> {
     }
 
     public void setUpdatedBy(User updatedBy) {
-        this.updatedBy = updatedBy;
+        if (updatedBy != null) {
+            this.updatedBy = updatedBy;
+            if (updatedOn == null) {
+                this.updatedOn = LocalDate.now();
+            }
+        }
     }
 
     public User getUpdatedBy() {
         return updatedBy;
+    }
+
+    public boolean isUpdatedBeforeCreatedOn() {
+        if (createdOn != null && updatedOn != null) {
+            return updatedOn.isBefore(createdOn);
+        }
+        return false;
     }
 
     @Override
