@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class UserServiceTestConfiguration {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Bean
     public UserService userService() {

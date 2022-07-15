@@ -158,21 +158,21 @@ public class UserServiceTest {
     @Test
     public void shouldGetAllThrowIllegalArgumentExceptionWhenParametersAreNull() {
         IllegalArgumentException exceptionForNullPageNo = assertThrows(IllegalArgumentException.class, () -> userService.getAll(null, 10, "id", "asc"));
-        assertEquals("Each parameter must not null or empty", exceptionForNullPageNo.getMessage());
+        assertEquals("Each parameter must not be null", exceptionForNullPageNo.getMessage());
         IllegalArgumentException exceptionForNullPageSize = assertThrows(IllegalArgumentException.class, () -> userService.getAll(0, null, "", "desc"));
-        assertEquals("Each parameter must not null or empty", exceptionForNullPageSize.getMessage());
+        assertEquals("Each parameter must not be null", exceptionForNullPageSize.getMessage());
         IllegalArgumentException exceptionForNullSortBy = assertThrows(IllegalArgumentException.class, () -> userService.getAll(0, 20, null, "desc"));
-        assertEquals("Each parameter must not null or empty", exceptionForNullSortBy.getMessage());
+        assertEquals("Each parameter must not be null", exceptionForNullSortBy.getMessage());
         IllegalArgumentException exceptionForNullDirectionSorting = assertThrows(IllegalArgumentException.class, () -> userService.getAll(0, 100, "firstName", null));
-        assertEquals("Each parameter must not null or empty", exceptionForNullDirectionSorting.getMessage());
+        assertEquals("Each parameter must not be null", exceptionForNullDirectionSorting.getMessage());
     }
 
     @Test
     public void shouldGetAllThrowIllegalArgumentExceptionWhenStringParametersAreEmpty() {
         IllegalArgumentException exceptionForEmptySortBy = assertThrows(IllegalArgumentException.class, () -> userService.getAll(0, 50, "", "desc"));
-        assertEquals("Each parameter must not null or empty", exceptionForEmptySortBy.getMessage());
+        assertEquals("Parameter sortBy and dir must not be empty", exceptionForEmptySortBy.getMessage());
         IllegalArgumentException exceptionForEmptyDirectionSorting = assertThrows(IllegalArgumentException.class, () -> userService.getAll(0, 5, "lastName", ""));
-        assertEquals("Each parameter must not null or empty", exceptionForEmptyDirectionSorting.getMessage());
+        assertEquals("Parameter sortBy and dir must not be empty", exceptionForEmptyDirectionSorting.getMessage());
     }
 
     @Test
