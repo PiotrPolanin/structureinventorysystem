@@ -16,6 +16,7 @@ import java.util.Locale;
 
 public abstract class GenericService<T extends UpdateEntity<T>> {
 
+    protected static final String DEFAULT_ERROR_MESSAGE_FOR_NULL = "Each parameter must not be null";
     protected final Class<T> entityClass;
     protected final GenericRepository<T> repository;
 
@@ -24,12 +25,22 @@ public abstract class GenericService<T extends UpdateEntity<T>> {
         this.repository = repository;
     }
 
+    protected void validateNullValues(String message, Object... objects) {
+        for (Object o : objects) {
+            if (o == null) {
+                throw new IllegalArgumentException(message);
+            }
+        }
+    }
+
     public T getById(Long id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Entity %s with id %s not found", entityClass.getName(), id)));
     }
 
     public List<T> getAll(Integer pageNo, Integer pageSize, String sortBy, String dir) {
-        if (pageNo != null && pageSize != null && sortBy != null && !sortBy.isEmpty() && dir != null && !dir.isEmpty()) {
+//        if (pageNo != null && pageSize != null && sortBy != null && !sortBy.isEmpty() && dir != null && !dir.isEmpty()) {
+        validateNullValues(DEFAULT_ERROR_MESSAGE_FOR_NULL, pageNo, pageSize, sortBy, dir);
+        if (!sortBy.isEmpty() && !dir.isEmpty()) {
             Sort sort = Sort.by(sortBy.trim());
             if (SortDirection.DESC.getValue().equals(dir.trim().toLowerCase(Locale.ROOT))) {
                 sort = sort.descending();
@@ -41,7 +52,7 @@ public abstract class GenericService<T extends UpdateEntity<T>> {
             }
             return new ArrayList<>();
         }
-        throw new IllegalArgumentException("Each parameter must not null or empty");
+        throw new IllegalArgumentException("Parameter sortBy and dir must not be empty");
     }
 
     @Transactional
