@@ -10,7 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/audit/building")
 public class BuildingAuditController extends GenericController<BuildingAudit> {
 
+    private final BuildingAuditService buildingAuditService;
+
     public BuildingAuditController(BuildingAuditService service) {
         super(service);
+        this.buildingAuditService = service;
     }
+
 }
