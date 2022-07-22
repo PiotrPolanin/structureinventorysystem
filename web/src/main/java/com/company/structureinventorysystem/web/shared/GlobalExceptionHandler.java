@@ -28,6 +28,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(exception.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity illegalArgumentException(IllegalArgumentException exception) {
+        return new ResponseEntity(exception.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     private String extract(String charSequence) {
         Pattern attributePattern = Pattern.compile(".*\\[\"(.+)\"\\].*");
         Matcher matcher = attributePattern.matcher(charSequence.replace("\n", ""));
