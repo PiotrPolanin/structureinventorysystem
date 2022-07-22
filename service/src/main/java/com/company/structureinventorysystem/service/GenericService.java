@@ -5,7 +5,6 @@ import com.company.structureinventorysystem.domain.shared.UpdateEntity;
 import com.company.structureinventorysystem.infrastructure.repository.GenericRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,19 +37,14 @@ public abstract class GenericService<T extends UpdateEntity<T>> {
     }
 
     public List<T> getAll(Integer pageNo, Integer pageSize, String sortBy, String dir) {
-//        if (pageNo != null && pageSize != null && sortBy != null && !sortBy.isEmpty() && dir != null && !dir.isEmpty()) {
         validateNullValues(DEFAULT_ERROR_MESSAGE_FOR_NULL, pageNo, pageSize, sortBy, dir);
         if (!sortBy.isEmpty() && !dir.isEmpty()) {
             Sort sort = Sort.by(sortBy.trim());
             if (SortDirection.DESC.getValue().equals(dir.trim().toLowerCase(Locale.ROOT))) {
                 sort = sort.descending();
             }
-            Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-            Page<T> pageEntities = repository.findAll(pageable);
-            if (pageEntities.hasContent()) {
-                return pageEntities.getContent();
-            }
-            return new ArrayList<>();
+            Page<T> pageEntities = repository.findAll(PageRequest.of(pageNo, pageSize, sort));
+            return pageEntities.hasContent() ? pageEntities.getContent() : new ArrayList<>();
         }
         throw new IllegalArgumentException("Parameter sortBy and dir must not be empty");
     }
