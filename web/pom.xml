@@ -30,6 +30,13 @@
         </dependency>
         <dependency>
             <groupId>com.company.structureinventorysystem</groupId>
+            <artifactId>service</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.company.structureinventorysystem</groupId>
             <artifactId>infrastructure</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -40,6 +47,12 @@
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.8.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
