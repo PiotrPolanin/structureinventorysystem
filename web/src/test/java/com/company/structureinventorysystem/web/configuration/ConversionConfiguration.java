@@ -1,6 +1,5 @@
 package com.company.structureinventorysystem.web.configuration;
 
-import com.company.structureinventorysystem.web.shared.GlobalExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -17,10 +16,15 @@ public class ConversionConfiguration {
 
     @Bean
     public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
+        return new MappingJackson2HttpMessageConverter(objectMapper());
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
         JavaTimeModule javaTimeModule = new JavaTimeModule();
         javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        return new MappingJackson2HttpMessageConverter((new ObjectMapper()).registerModule(javaTimeModule));
+        return (new ObjectMapper()).registerModule(javaTimeModule);
     }
 
 }
