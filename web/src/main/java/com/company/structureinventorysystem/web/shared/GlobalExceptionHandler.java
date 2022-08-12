@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ResponseEntity httpMessageNotReadableException(HttpMessageNotReadableException exception) {
-        return new ResponseEntity(String.format("Error to parse attribute %s", extract(exception.getLocalizedMessage())), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(String.format("Error to parse attribute %s", extract(exception.getLocalizedMessage(), ".*\\[\"(.+)\"\\].*", 1)), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = IllegalStateException.class)
@@ -33,10 +33,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(exception.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    private String extract(String charSequence) {
-        Pattern attributePattern = Pattern.compile(".*\\[\"(.+)\"\\].*");
+    @ExceptionHandler(value = NumberFormatException.class)
+    public ResponseEntity numberFormatException(NumberFormatException exception) {
+        return new ResponseEntity(String.format("Error to parse value to number for parameter %s",  extract(exception.getLocalizedMessage(), ".*\\\"(.+)\\\".*", 1)), HttpStatus.BAD_REQUEST);
+    }
+
+    private String extract(String charSequence, String pattern, int index) {
+        Pattern attributePattern = Pattern.compile(pattern);
         Matcher matcher = attributePattern.matcher(charSequence.replace("\n", ""));
-        return matcher.matches() ? matcher.group(1) : "";
+        return matcher.matches() ? matcher.group(index) : "";
     }
 
 }
